@@ -1,0 +1,17 @@
+{{title}}
+|===
+|코드|코드명
+
+{{#fields}}
+|{{#tableCellContent}}
+{{#optional}}
+{{path}}
+{{/optional}}
+{{^optional}}
+{{path}} [.red]#***#
+{{/optional}}
+{{/tableCellContent}}
+|{{#tableCellContent}}{{description}}{{/tableCellContent}}
+
+{{/fields}}
+|===

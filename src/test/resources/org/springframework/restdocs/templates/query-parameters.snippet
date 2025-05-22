@@ -1,0 +1,15 @@
+|===
+|파라미터|설명
+
+{{#parameters}}
+|{{#tableCellContent}}
+{{#optional}}
+`+{{name}}+`
+{{/optional}}
+{{^optional}}
+`+{{name}}+` [.red]#***#
+{{/optional}}
+{{/tableCellContent}}
+|{{#tableCellContent}}{{description}}{{/tableCellContent}}
+{{/parameters}}
+|===

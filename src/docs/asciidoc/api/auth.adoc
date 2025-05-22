@@ -1,0 +1,26 @@
+=== 회원 관리
+
+==== 인증 메일 발송
+
+include::{snippets}/send-valid-email/http-request.adoc[]
+include::{snippets}/send-valid-email/request-fields.adoc[]
+include::{snippets}/send-valid-email/response-fields.adoc[]
+
+==== 회원가입
+include::{snippets}/sign-up/http-request.adoc[]
+include::{snippets}/sign-up/request-fields.adoc[]
+include::{snippets}/sign-up/response-fields.adoc[]
+
+==== 로그인
+include::{snippets}/sign-in/http-request.adoc[]
+include::{snippets}/sign-in/request-fields.adoc[]
+include::{snippets}/sign-in/response-fields-data.adoc[]
+
+==== 토큰 재발급
+include::{snippets}/auth/refresh/http-request.adoc[]
+include::{snippets}/auth/refresh/request-fields.adoc[]
+include::{snippets}/auth/refresh/response-fields-data.adoc[]
+
+==== 로그아웃
+include::{snippets}/auth/logout/http-request.adoc[]
+include::{snippets}/auth/logout/response-fields-data.adoc[]

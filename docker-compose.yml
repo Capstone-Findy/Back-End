@@ -1,0 +1,57 @@
+services:
+  findy-database:
+    container_name: findy-database
+    image: mysql:latest
+    ports:
+      - "43306:3306"
+    volumes:
+      - ./volume/mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "findy"
+      MYSQL_USER: "server"
+      MYSQL_PASSWORD: "findy2025"
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -proot" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - app_network
+
+  redis:
+    container_name: findy-redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./volume/redis_data:/data
+    command: redis-server --requirepass findy2025 --save 60 1 --loglevel warning
+    environment:
+      REDIS_PASSWORD: "findy2025"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - app_network
+
+  findy:
+    container_name: findy-server
+    image: dlatpgus/findy:${BUILD_NUMBER}  # 젠킨스 빌드 번호 사용
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: develop
+    depends_on:
+      - findy-database
+      - redis
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
