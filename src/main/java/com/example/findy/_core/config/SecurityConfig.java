@@ -63,7 +63,6 @@ public class SecurityConfig {
         this.cookieProperties = securityProperties.cookie();
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http

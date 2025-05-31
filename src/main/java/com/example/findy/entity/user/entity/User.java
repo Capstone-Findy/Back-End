@@ -1,5 +1,6 @@
 package com.example.findy.entity.user.entity;
 
+import com.example.findy.api.auth.dto.request.GoogleSignUpReq;
 import com.example.findy.api.auth.dto.request.KakaoSignUpReq;
 import com.example.findy.api.auth.dto.request.SignUpReq;
 import com.example.findy.entity._common.BaseTimeEntity;
@@ -51,5 +52,9 @@ public class User extends BaseTimeEntity {
 
     public static User of(SignUpReq req, String password, File file){
         return new User(req.name(), req.email(), password, file);
+    }
+
+    public static User of(GoogleSignUpReq req, File file) {
+        return new User(req.name(), req.email(), req.password(), file);
     }
 }
