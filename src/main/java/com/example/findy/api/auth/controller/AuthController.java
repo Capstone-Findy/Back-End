@@ -85,4 +85,11 @@ public class AuthController {
         return ApiResponse.ok(response);
     }
 
+    @PostMapping("/auth/logout")
+    public ResponseEntity<SingleResult<LogoutRes>> logout(
+            WebClientResponse res
+    ) {
+        LogoutRes response = authService.logout(res);
+        return ApiResponse.ok(response);
+    }
 }
