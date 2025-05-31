@@ -65,5 +65,10 @@ externals:
     client-secret: ${CLIENT_SECRET}
     client-id: ${CLIENT_ID}
 
+  google:
+    client-id: ${CLIENT_ID}
+    client-secret: ${CLIENT_SECRET}
+    redirect_uri:
+
 server:
   port: ${SERVER_PORT:8080}

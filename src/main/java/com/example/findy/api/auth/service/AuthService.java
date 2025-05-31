@@ -1,5 +1,6 @@
 package com.example.findy.api.auth.service;
 
+import com.example.findy._core.client.google.GoogleClient;
 import com.example.findy._core.client.kakao.KakaoClient;
 import com.example.findy._core.client.kakao.dto.request.KakaoCodeReq;
 import com.example.findy._core.environment.SpringProperties;
@@ -16,8 +17,10 @@ import com.example.findy.entity.auth.repository.BlackListRepository;
 import com.example.findy.entity.auth.repository.ValidMailRepository;
 import com.example.findy.entity.file.entity.File;
 import com.example.findy.entity.file.repository.FileRepository;
+import com.example.findy.entity.token.GoogleToken;
 import com.example.findy.entity.token.KakaoToken;
 import com.example.findy.entity.token.Token;
+import com.example.findy.entity.token.repository.GoogleTokenRepository;
 import com.example.findy.entity.token.repository.KakaoTokenRepository;
 import com.example.findy.entity.token.repository.TokenRepository;
 import com.example.findy.entity.user.entity.User;
@@ -40,6 +43,8 @@ public class AuthService {
     private final SpringProperties properties;
     private final MailContentBuilder mailContentBuilder;
     private final KakaoClient kakaoClient;
+    private final GoogleClient googleClient;
+    private final GoogleTokenRepository googleTokenRepository;
 
     private final TokenRepository tokenRepository;
     private final ValidMailRepository validMailRepository;
@@ -95,6 +100,39 @@ public class AuthService {
     }
 
     @Transactional
+    public RefreshRes googleSignUp(WebClientResponse res, String code){
+        GoogleSignUpReq googleSignUpReq = googleClient.signUp(code).block();
+        User user;
+
+        if(!userRepository.existsByEmail(googleSignUpReq.email())){
+            File file = File.of(googleSignUpReq.picture());
+            fileRepository.save(file);
+            user = User.of(googleSignUpReq, file);
+            userRepository.save(user);
+        } else {
+            user = userRepository.getByEmail(googleSignUpReq.email());
+        }
+
+        String refreshToken = googleSignUpReq.refreshToken();
+        GoogleToken existingToken = googleTokenRepository.findByUserId(user.getId()).orElse(null);
+
+        if (refreshToken == null && existingToken != null) {
+            refreshToken = existingToken.getRefreshToken();
+        }
+        if (refreshToken == null) {
+            throw new RuntimeException("Google refresh_token is missing and cannot be saved.");
+        }
+
+        GoogleToken googleToken = GoogleToken.of(user, googleSignUpReq.accessToken(), refreshToken);
+        googleTokenRepository.save(googleToken);
+
+        Token token = jwtProvider.issueTokens(user, true);
+        res.addTokenCookies(res, token);
+
+        return new RefreshRes(token.getRefreshToken());
+    }
+
+    @Transactional
     public SignInRes signIn(WebClientResponse res, SignInReq req) {
         User user = userRepository.getByEmail(req.email());
         if(!passwordEncoder.matches(req.password(), user.getPassword())){
@@ -140,6 +178,12 @@ public class AuthService {
             KakaoToken kakaoToken = kakaoTokenRepository.getByUserId(userId);
             kakaoClient.logout(kakaoToken);
             kakaoTokenRepository.delete(kakaoToken);
+        }
+
+        if(user.getPassword().equals("google")) {
+            GoogleToken googleToken = googleTokenRepository.getByUserId(userId);
+            googleClient.logout(googleToken.getAccessToken());
+            googleTokenRepository.delete(googleToken);
         }
 
         tokenRepository.delete(token);

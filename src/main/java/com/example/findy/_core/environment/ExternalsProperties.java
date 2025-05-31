@@ -5,7 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "externals")
 public record ExternalsProperties(
         RedisProperties redis,
-        KakaoProperties kakao
+        KakaoProperties kakao,
+        GoogleProperties google
 ) {
     public record RedisProperties(
             String host,
@@ -20,4 +21,10 @@ public record ExternalsProperties(
             String clientId
     ) {
     }
+
+    public record GoogleProperties(
+            String clientId,
+            String clientSecret,
+            String redirectUri
+    ) {}
 }
