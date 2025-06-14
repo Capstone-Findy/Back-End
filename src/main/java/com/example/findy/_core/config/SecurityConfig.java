@@ -37,6 +37,7 @@ public class SecurityConfig {
             "/auth/refresh",
             "/auth/valid/**",
             "/auth/kakao/sign-up",
+            "/auth/google/auth",
             "/api",
             "/error/**",
             "/courses/**",
@@ -62,7 +63,6 @@ public class SecurityConfig {
         this.corsProperties = securityProperties.cors();
         this.cookieProperties = securityProperties.cookie();
     }
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

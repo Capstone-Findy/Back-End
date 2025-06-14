@@ -80,7 +80,6 @@ public class KakaoClient {
                     return KakaoSignUpReq.of(kakaoAccountInfoRes.kakao_account().profile().nickname(),
                             kakaoAccountInfoRes.kakao_account().profile().profile_image_url(),
                             kakaoAccountInfoRes.kakao_account().email(),
-                            "kakao",
                             response.refresh_token(),
                             response.access_token());
                 });

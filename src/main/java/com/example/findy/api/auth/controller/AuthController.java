@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,13 +41,7 @@ public class AuthController {
         return ApiResponse.ok();
     }
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<CommonResult> signUp(
-            @Valid @RequestBody SignUpReq req
-    ) {
-        authService.signUp(req);
-        return ApiResponse.ok();
-    }
+
 
     @GetMapping("/kakao/sign-up")
     public ResponseEntity<SingleResult<RefreshRes>> kakaoSignUp(
@@ -57,14 +52,17 @@ public class AuthController {
         return ApiResponse.ok(response);
     }
 
-    @PostMapping("/sign-in")
-    public ResponseEntity<SingleResult<SignInRes>> signIn(
+    @GetMapping("/google/auth")
+    public ResponseEntity<SingleResult<RefreshRes>> googleAuth(
             WebClientResponse res,
-            @Valid @RequestBody SignInReq req
+            @RequestParam("code") String code
     ) {
-        SignInRes response = authService.signIn(res, req);
+        RefreshRes response = authService.googleAuth(res, code);
         return ApiResponse.ok(response);
     }
+
+
+
 
     @PostMapping("/auth/refresh")
     public ResponseEntity<SingleResult<RefreshRes>> refresh(
@@ -82,5 +80,4 @@ public class AuthController {
         LogoutRes response = authService.logout(res);
         return ApiResponse.ok(response);
     }
-
 }
