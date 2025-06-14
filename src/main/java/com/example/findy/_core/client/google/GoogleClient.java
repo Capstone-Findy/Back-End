@@ -48,9 +48,9 @@ public class GoogleClient {
     public Mono<GoogleTokenRes> getToken(String code) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("code", code);
-        formData.add("client_id", googleProperties.clientId());
-        formData.add("client_secret", googleProperties.clientSecret());
-        formData.add("redirect_uri", googleProperties.redirectUri());
+        formData.add("client_id", googleProperties.client_id());
+        formData.add("client_secret", googleProperties.client_secret());
+        formData.add("redirect_uri", googleProperties.redirect_uri());
         formData.add("grant_type", "authorization_code");
 
         return this.tokenWebClient
@@ -78,7 +78,6 @@ public class GoogleClient {
                                 userInfo.name(),
                                 userInfo.picture(),
                                 userInfo.email(),
-                                "google",
                                 tokenRes.refresh_token(),
                                 tokenRes.access_token()
                         )));
@@ -86,8 +85,8 @@ public class GoogleClient {
 
     public Mono<GoogleTokenRes> refreshToken(String refreshToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("client_id", googleProperties.clientId());
-        formData.add("client_secret", googleProperties.clientSecret());
+        formData.add("client_id", googleProperties.client_id());
+        formData.add("client_secret", googleProperties.client_secret());
         formData.add("refresh_token", refreshToken);
         formData.add("grant_type", "refresh_token");
 

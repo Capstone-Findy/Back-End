@@ -70,12 +70,6 @@ public class AuthService {
         validMailRepository.save(validMail);
     }
 
-    @Transactional
-    public void signUp(SignUpReq req) {
-        validMailRepository.validCheck(req.email());
-        User user = authMapper.toEntity(req);
-        userRepository.save(user);
-    }
 
     @Transactional
     public RefreshRes kakaoSignUp(WebClientResponse res, KakaoCodeReq req){
@@ -100,19 +94,22 @@ public class AuthService {
     }
 
     @Transactional
-    public RefreshRes googleSignUp(WebClientResponse res, String code){
+    public RefreshRes googleAuth(WebClientResponse res, String code) {
         GoogleSignUpReq googleSignUpReq = googleClient.signUp(code).block();
         User user;
 
-        if(!userRepository.existsByEmail(googleSignUpReq.email())){
+        // 회원가입 또는 기존 유저 조회
+        if (!userRepository.existsByEmail(googleSignUpReq.email())) {
             File file = File.of(googleSignUpReq.picture());
             fileRepository.save(file);
+
             user = User.of(googleSignUpReq, file);
             userRepository.save(user);
         } else {
             user = userRepository.getByEmail(googleSignUpReq.email());
         }
 
+        // refresh_token 처리
         String refreshToken = googleSignUpReq.refreshToken();
         GoogleToken existingToken = googleTokenRepository.findByUserId(user.getId()).orElse(null);
 
@@ -123,27 +120,18 @@ public class AuthService {
             throw new RuntimeException("Google refresh_token is missing and cannot be saved.");
         }
 
+        // 저장
         GoogleToken googleToken = GoogleToken.of(user, googleSignUpReq.accessToken(), refreshToken);
         googleTokenRepository.save(googleToken);
 
+        // JWT 발급 및 응답
         Token token = jwtProvider.issueTokens(user, true);
         res.addTokenCookies(res, token);
 
         return new RefreshRes(token.getRefreshToken());
     }
 
-    @Transactional
-    public SignInRes signIn(WebClientResponse res, SignInReq req) {
-        User user = userRepository.getByEmail(req.email());
-        if(!passwordEncoder.matches(req.password(), user.getPassword())){
-            throw new NotFoundUserException();
-        }
 
-        Token token = jwtProvider.issueTokens(user, req.rememberMe());
-
-        res.addTokenCookies(res, token);
-        return new SignInRes(token.getRefreshToken());
-    }
 
     @Transactional
     public RefreshRes refresh(WebClientResponse res, RefreshReq req) {
@@ -153,7 +141,7 @@ public class AuthService {
         BlackList blackList = BlackList.of(existToken.getAccessToken());
         blackListRepository.save(blackList);
 
-        if(user.getPassword().equals("kakao")) {
+        if(user.getType() == User.LoginType.KAKAO) {
             KakaoToken kakaoToken = jwtProvider.issueKakaoTokens(user);
         }
 
@@ -174,13 +162,13 @@ public class AuthService {
         BlackList blackList = BlackList.of(token.getAccessToken());
         blackListRepository.save(blackList);
 
-        if(user.getPassword().equals("kakao")) {
+        if(user.getType() == User.LoginType.KAKAO) {
             KakaoToken kakaoToken = kakaoTokenRepository.getByUserId(userId);
             kakaoClient.logout(kakaoToken);
             kakaoTokenRepository.delete(kakaoToken);
         }
 
-        if(user.getPassword().equals("google")) {
+        if(user.getType() == User.LoginType.GOOGLE) {
             GoogleToken googleToken = googleTokenRepository.getByUserId(userId);
             googleClient.logout(googleToken.getAccessToken());
             googleTokenRepository.delete(googleToken);

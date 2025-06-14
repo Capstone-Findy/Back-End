@@ -23,8 +23,8 @@ public record ExternalsProperties(
     }
 
     public record GoogleProperties(
-            String clientId,
-            String clientSecret,
-            String redirectUri
+            String client_id,
+            String client_secret,
+            String redirect_uri
     ) {}
 }

@@ -41,13 +41,7 @@ public class AuthController {
         return ApiResponse.ok();
     }
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<CommonResult> signUp(
-            @Valid @RequestBody SignUpReq req
-    ) {
-        authService.signUp(req);
-        return ApiResponse.ok();
-    }
+
 
     @GetMapping("/kakao/sign-up")
     public ResponseEntity<SingleResult<RefreshRes>> kakaoSignUp(
@@ -58,23 +52,17 @@ public class AuthController {
         return ApiResponse.ok(response);
     }
 
-    @GetMapping("/google/sign-up")
-    public ResponseEntity<SingleResult<RefreshRes>> googleSignUp(
+    @GetMapping("/google/auth")
+    public ResponseEntity<SingleResult<RefreshRes>> googleAuth(
             WebClientResponse res,
             @RequestParam("code") String code
     ) {
-        RefreshRes response = authService.googleSignUp(res, code);
+        RefreshRes response = authService.googleAuth(res, code);
         return ApiResponse.ok(response);
     }
 
-    @PostMapping("/sign-in")
-    public ResponseEntity<SingleResult<SignInRes>> signIn(
-            WebClientResponse res,
-            @Valid @RequestBody SignInReq req
-    ) {
-        SignInRes response = authService.signIn(res, req);
-        return ApiResponse.ok(response);
-    }
+
+
 
     @PostMapping("/auth/refresh")
     public ResponseEntity<SingleResult<RefreshRes>> refresh(

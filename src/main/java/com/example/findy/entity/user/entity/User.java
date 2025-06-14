@@ -1,60 +1,95 @@
 package com.example.findy.entity.user.entity;
 
-import com.example.findy.api.auth.dto.request.GoogleSignUpReq;
 import com.example.findy.api.auth.dto.request.KakaoSignUpReq;
+import com.example.findy.api.auth.dto.request.GoogleSignUpReq;
 import com.example.findy.api.auth.dto.request.SignUpReq;
-import com.example.findy.entity._common.BaseTimeEntity;
 import com.example.findy.entity.file.entity.File;
+import com.findy.processor.RestDocs;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Comment;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-@Getter
+import java.time.Instant;
+
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseTimeEntity {
-    @Column(nullable = false)
-    @Comment("유저 이름")
-    private String name;
+@AllArgsConstructor
+@Builder
+public class User {
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "file_id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @JoinColumn(name = "file_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private File file;
 
     @Column(nullable = false, unique = true)
-    @Comment("유저 이메일")
     private String email;
 
+    @Column(nullable = false, length = 20)
+    private String name;
+
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Comment("암호화 된 패스워드")
-    private String password;
+    private LoginType type;
 
     @Column(nullable = false)
-    @Comment("관리자 여부")
-    private Boolean admin = false;
+    private int point;
 
     @Column(nullable = false)
-    @Comment("프로필 공개 여부")
-    private Boolean open = true;
+    private Long item1;
 
-    private User(String name, String email, String password, File file) {
-        this.file = file;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
+    @Column(nullable = false)
+    private Long item2;
 
-    public static User of(KakaoSignUpReq req, File file){
-        return new User(req.name(), req.email(), req.password(), file);
-    }
+    @Column(nullable = false)
+    private Long item3;
 
-    public static User of(SignUpReq req, String password, File file){
-        return new User(req.name(), req.email(), password, file);
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Instant createdAt;
+
+    @UpdateTimestamp
+    private Instant updatedAt;
+
+
+
+    public static User of(KakaoSignUpReq req, File file) {
+        return User.builder()
+                .email(req.email())
+                .name(req.name())
+                .type(LoginType.KAKAO)
+                .file(file)
+                .point(0)
+                .item1(0L)
+                .item2(0L)
+                .item3(0L)
+                .build();
     }
 
     public static User of(GoogleSignUpReq req, File file) {
-        return new User(req.name(), req.email(), req.password(), file);
+        return User.builder()
+                .email(req.email())
+                .name(req.name())
+                .type(LoginType.GOOGLE)
+                .file(file)
+                .point(0)
+                .item1(0L)
+                .item2(0L)
+                .item3(0L)
+                .build();
     }
+
+    public enum LoginType {
+        @RestDocs("구글 계정")
+        GOOGLE,
+        @RestDocs("카카오 계정")
+        KAKAO
+    }
+
 }

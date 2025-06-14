@@ -14,10 +14,4 @@ public class AuthMapper {
     private final PasswordEncoder passwordEncoder;
     private final FileRepository fileRepository;
 
-    public User toEntity(SignUpReq req){
-        String password = passwordEncoder.encode(req.password());
-        File file = File.of(req.file());
-        fileRepository.save(file);
-        return User.of(req, password, file);
-    }
 }

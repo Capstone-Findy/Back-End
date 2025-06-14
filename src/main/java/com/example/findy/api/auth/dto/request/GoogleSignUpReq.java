@@ -4,14 +4,13 @@ public record GoogleSignUpReq(
         String name,
         String picture,
         String email,
-        String password,
         String refreshToken,
         String accessToken
 ) {
     public static GoogleSignUpReq of(
             String name, String picture, String email,
-            String password, String refreshToken, String accessToken
+            String refreshToken, String accessToken
     ) {
-        return new GoogleSignUpReq(name, picture, email, password, refreshToken, accessToken);
+        return new GoogleSignUpReq(name, picture, email, refreshToken, accessToken);
     }
 }
