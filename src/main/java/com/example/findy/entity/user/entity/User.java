@@ -1,14 +1,20 @@
 package com.example.findy.entity.user.entity;
 
 import com.example.findy.api.auth.dto.request.KakaoSignUpReq;
-import com.example.findy.api.auth.dto.request.SignUpReq;
 import com.example.findy.entity._common.BaseTimeEntity;
 import com.example.findy.entity.file.entity.File;
+import com.example.findy.entity.game.origin.entity.Origin;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 @Getter
 @Entity
@@ -18,7 +24,7 @@ public class User extends BaseTimeEntity {
     @Comment("유저 이름")
     private String name;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
     private File file;
 
@@ -26,30 +32,55 @@ public class User extends BaseTimeEntity {
     @Comment("유저 이메일")
     private String email;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Comment("암호화 된 패스워드")
-    private String password;
+    @Comment("로그인 방식")
+    private LoginType type;
 
     @Column(nullable = false)
-    @Comment("관리자 여부")
-    private Boolean admin = false;
+    @Comment("라이프")
+    private int heart;
 
     @Column(nullable = false)
-    @Comment("프로필 공개 여부")
-    private Boolean open = true;
+    @Comment("포인트")
+    private int point;
 
-    private User(String name, String email, String password, File file) {
+    @Column(nullable = false)
+    @Comment("아이템 1")
+    private int item1;
+
+    @Column(nullable = false)
+    @Comment("아이템 2")
+    private int item2;
+
+    @Column(nullable = false)
+    @Comment("아이템 3")
+    private int item3;
+
+    @JoinColumn(name = "user_id")
+    @ManyToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<User> friends;
+
+    private User(String name, String email, LoginType type, File file) {
         this.file = file;
         this.name = name;
         this.email = email;
-        this.password = password;
+        this.type = type;
+        this.heart = 5;
+        this.point = 0;
+        this.item1 = 0;
+        this.item2 = 0;
+        this.item3 = 0;
+        this.friends = new ArrayList<>();
     }
 
     public static User of(KakaoSignUpReq req, File file){
-        return new User(req.name(), req.email(), req.password(), file);
+        return new User(req.name(), req.email(), req.type(), file);
     }
 
-    public static User of(SignUpReq req, String password, File file){
-        return new User(req.name(), req.email(), password, file);
+    public void updateHeart(int heart) {
+        this.heart += heart;
+        this.heart = max(0, this.heart);
+        this.heart = min(5, this.heart);
     }
 }
