@@ -1,6 +1,7 @@
 package com.example.findy.entity.user.entity;
 
 import com.example.findy.api.auth.dto.request.KakaoSignUpReq;
+import com.example.findy.api.user.dto.request.UpdateItem;
 import com.example.findy.entity._common.BaseTimeEntity;
 import com.example.findy.entity.file.entity.File;
 import com.example.findy.entity.game.origin.entity.Origin;
@@ -82,5 +83,11 @@ public class User extends BaseTimeEntity {
         this.heart += heart;
         this.heart = max(0, this.heart);
         this.heart = min(5, this.heart);
+    }
+
+    public void updateItem(UpdateItem req) {
+        this.item1 += req.item1();
+        this.item2 += req.item2();
+        this.item3 += req.item3();
     }
 }
