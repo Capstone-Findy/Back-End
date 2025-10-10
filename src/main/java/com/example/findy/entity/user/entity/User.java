@@ -1,10 +1,10 @@
 package com.example.findy.entity.user.entity;
 
 import com.example.findy.api.auth.dto.request.KakaoSignUpReq;
+import com.example.findy.api.auth.dto.request.SignUpReq;
 import com.example.findy.api.user.dto.request.UpdateItem;
 import com.example.findy.entity._common.BaseTimeEntity;
 import com.example.findy.entity.file.entity.File;
-import com.example.findy.entity.game.origin.entity.Origin;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -75,8 +75,12 @@ public class User extends BaseTimeEntity {
         this.friends = new ArrayList<>();
     }
 
-    public static User of(KakaoSignUpReq req, File file){
+    public static User of(KakaoSignUpReq req,  File file){
         return new User(req.name(), req.email(), req.type(), file);
+    }
+
+    public static User of(SignUpReq req, LoginType type, File file){
+        return new User(req.name(), req.email(), type, file);
     }
 
     public void updateHeart(int heart) {

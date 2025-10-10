@@ -2,7 +2,9 @@ package com.example.findy.api.user.service;
 
 import com.example.findy.api.auth.dto.JwtAuthentication;
 import com.example.findy.api.user.dto.request.UpdateItem;
+import com.example.findy.api.user.dto.response.UserRes;
 import com.example.findy.entity.user.entity.User;
+import com.example.findy.entity.user.repository.UserQueryRepository;
 import com.example.findy.entity.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserQueryRepository userQueryRepository;
 
     @Transactional
     public void updateHeart(int cnt) {
@@ -28,5 +31,12 @@ public class UserService {
         User user = userRepository.getById(userId);
         user.updateItem(req);
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public UserRes getUser() {
+        Long userId = JwtAuthentication.getUserId();
+        User user = userRepository.getById(userId);
+        return userQueryRepository.getUserDetail(user);
     }
 }
