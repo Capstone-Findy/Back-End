@@ -1,5 +1,6 @@
 package com.example.findy.entity.token;
 
+import com.example.findy.api.auth.dto.request.KakaoSignUpReq;
 import com.example.findy.api.auth.dto.request.GoogleSignUpReq;
 import com.example.findy.entity.user.entity.User;
 import jakarta.persistence.Column;
@@ -15,7 +16,6 @@ import java.time.Instant;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoogleToken {
-
     @Id
     @Column(name = "user_id", nullable = false)
     private long userId;
@@ -29,17 +29,35 @@ public class GoogleToken {
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
 
-    public static GoogleToken of(User user, GoogleSignUpReq req) {
-        return new GoogleToken(user.getId(), req.accessToken(), req.refreshToken());
-    }
 
-    public static GoogleToken of(User user, String accessToken, String refreshToken) {
-        return new GoogleToken(user.getId(), accessToken, refreshToken);
-    }
-
-    private GoogleToken(long userId, String accessToken, String refreshToken) {
-        this.userId = userId;
+    private GoogleToken(
+            User user,
+            String accessToken,
+            String refreshToken
+    ) {
+        this.userId = user.getId();
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+    }
+
+    public static GoogleToken of(
+            User user,
+            KakaoSignUpReq req
+    ) {
+        return new GoogleToken(
+                user,
+                req.accessToken(),
+                req.refreshToken()
+        );
+    }
+
+    public static GoogleToken of(
+            User user,
+            String accessToken,
+            String refreshToken
+    ){
+        return new GoogleToken(user,
+                accessToken,
+                refreshToken);
     }
 }

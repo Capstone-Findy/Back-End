@@ -24,7 +24,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USER_NAME:findy.korea@gmail.com}
+    username: ${MAIL_USER_NAME:findy2025@gmail.com}
     password: ${MAIL_PASSWORD:qzflvcxygsynzvfl}
     properties:
       expiration: ${MAIL_EXPIRATION:7200}
