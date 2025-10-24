@@ -128,14 +128,10 @@ public class AuthService {
         // refresh_token 처리
         String refreshToken = googleSignUpReq.refreshToken();
         GoogleToken existingToken = googleTokenRepository.findByUserId(user.getId()).orElse(null);
-        if (refreshToken == null && existingToken != null) {
-            refreshToken = existingToken.getRefreshToken();
-        }
-        if (refreshToken == null) {
-            throw new RuntimeException("Google refresh_token is missing and cannot be saved.");
-        }
-        // 저장
-        GoogleToken googleToken = GoogleToken.of(user, googleSignUpReq.accessToken(), refreshToken);
+        String finalRefresh = (refreshToken != null) ? refreshToken : (existingToken != null ? existingToken.getRefreshToken() : null);
+
+// 저장(리프레시 토큰 null 허용)
+        GoogleToken googleToken = GoogleToken.of(user, googleSignUpReq.accessToken(), finalRefresh);
         googleTokenRepository.save(googleToken);
         // JWT 발급 및 응답
         Token token = jwtProvider.issueTokens(user, true);
@@ -155,13 +151,17 @@ public class AuthService {
             KakaoToken kakaoToken = jwtProvider.issueKakaoTokens(user);
         }
 
-        if (user.getType() == User.LoginType.GOOGLE) {
+        if (user.getType().equals(LoginType.GOOGLE)) {
             GoogleToken gt = googleTokenRepository.getByUserId(user.getId());
-            GoogleTokenRes gtr = googleClient.refreshToken(gt.getRefreshToken()).block();
-            String newAccess = gtr.access_token();
-            String newRefresh = (gtr.refresh_token() != null && !gtr.refresh_token().isBlank()) ? gtr.refresh_token() : gt.getRefreshToken();
-            googleTokenRepository.delete(gt);
-            googleTokenRepository.save(GoogleToken.of(user, newAccess, newRefresh));
+            if (gt.getRefreshToken() != null && !gt.getRefreshToken().isBlank()) {
+                GoogleTokenRes gtr = googleClient.refreshToken(gt.getRefreshToken()).block();
+                String newAccess = gtr.access_token();
+                String newRefresh = (gtr.refresh_token() != null && !gtr.refresh_token().isBlank())
+                        ? gtr.refresh_token()
+                        : gt.getRefreshToken();
+                googleTokenRepository.delete(gt);
+                googleTokenRepository.save(GoogleToken.of(user, newAccess, newRefresh));
+            }
         }
         Token token = jwtProvider.issueTokens(user, existToken.isRememberMe());
         res.addTokenCookies(res, token);
@@ -185,7 +185,7 @@ public class AuthService {
             kakaoClient.logout(kakaoToken);
             kakaoTokenRepository.delete(kakaoToken);
         }
-        if (user.getType() == User.LoginType.GOOGLE) {
+        if (user.getType().equals(LoginType.GOOGLE)) {
             GoogleToken googleToken = googleTokenRepository.getByUserId(userId);
             String tokenToRevoke = (googleToken.getRefreshToken() != null && !googleToken.getRefreshToken().isBlank())
                     ? googleToken.getRefreshToken()
@@ -206,6 +206,7 @@ public class AuthService {
         };
         mailSender.send(messagePreparator);
     }
+
     @Transactional
     public void withdraw(WebClientResponse res) {
         res.removeAllCustomCookies();
@@ -213,11 +214,11 @@ public class AuthService {
         User user = userRepository.getById(userId);
         Token token = tokenRepository.getByUserId(userId);
         blackListRepository.save(BlackList.of(token.getAccessToken()));
-        if (user.getType() == User.LoginType.KAKAO) {
+        if (user.getType().equals(LoginType.KAKAO)) {
             KakaoToken kt = kakaoTokenRepository.getByUserId(userId);
             kakaoClient.logout(kt);
             kakaoTokenRepository.delete(kt);
-        } else if (user.getType() == User.LoginType.GOOGLE) {
+        } else if (user.getType().equals(LoginType.GOOGLE)) {
             GoogleToken gt = googleTokenRepository.getByUserId(userId);
             String tokenToRevoke = (gt.getRefreshToken() != null && !gt.getRefreshToken().isBlank())
                     ? gt.getRefreshToken()

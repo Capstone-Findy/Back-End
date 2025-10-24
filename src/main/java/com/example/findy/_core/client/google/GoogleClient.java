@@ -4,6 +4,7 @@ import com.example.findy._core.client.google.dto.response.GoogleTokenRes;
 import com.example.findy._core.client.google.dto.response.GoogleUserInfoRes;
 import com.example.findy._core.environment.ExternalsProperties;
 import com.example.findy.api.auth.dto.request.GoogleSignUpReq;
+import com.example.findy.entity.user.entity.LoginType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -67,6 +68,7 @@ public class GoogleClient {
                                 userInfo.name(),
                                 userInfo.picture(),
                                 userInfo.email(),
+                                LoginType.GOOGLE,
                                 tokenRes.refresh_token(),
                                 tokenRes.access_token()
                         )));

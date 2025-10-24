@@ -64,9 +64,9 @@ externals:
     client-id: ${CLIENT_ID}
 
   google:
-    client_id: ${GOOGLE_CLIENT_ID:443990293569-kk55tr2uih25ng3pqueoarqi4bg90a2e.apps.googleusercontent.com}
-    client_secret: ${GOOGLE_CLIENT_SECRET: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}
-    redirect_uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/google/auth}
+    client_id: ${GOOGLE_CLIENT_ID}
+    client_secret: ${GOOGLE_CLIENT_SECRET}
+    redirect_uri: ${GOOGLE_REDIRECT_URI}
 
 server:
   port: ${SERVER_PORT:8080}

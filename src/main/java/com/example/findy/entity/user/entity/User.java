@@ -1,5 +1,6 @@
 package com.example.findy.entity.user.entity;
 
+import com.example.findy.api.auth.dto.request.GoogleSignUpReq;
 import com.example.findy.api.auth.dto.request.KakaoSignUpReq;
 import com.example.findy.api.auth.dto.request.SignUpReq;
 import com.example.findy.api.user.dto.request.UpdateItem;
@@ -25,7 +26,7 @@ public class User extends BaseTimeEntity {
     @Comment("유저 이름")
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "file_id")
     private File file;
 
@@ -59,7 +60,7 @@ public class User extends BaseTimeEntity {
     private int item3;
 
     @JoinColumn(name = "user_id")
-    @ManyToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<User> friends;
 
     private User(String name, String email, LoginType type, File file) {
@@ -81,6 +82,10 @@ public class User extends BaseTimeEntity {
 
     public static User of(SignUpReq req, LoginType type, File file){
         return new User(req.name(), req.email(), type, file);
+    }
+
+    public static User of(GoogleSignUpReq req, File file){
+        return new User(req.name(), req.email(), req.type(), file);
     }
 
     public void updateHeart(int heart) {

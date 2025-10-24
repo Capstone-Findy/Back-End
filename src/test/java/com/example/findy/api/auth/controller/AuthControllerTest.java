@@ -1,6 +1,5 @@
 package com.example.findy.api.auth.controller;
 
-import com.example.findy._core.client.kakao.dto.request.KakaoCodeReq;
 import com.example.findy._core.infrastructure.servlet.WebClientResponse;
 import com.example.findy._testutils.ControllerTest;
 import com.example.findy._testutils.fixture.AuthFixture;
@@ -22,6 +21,11 @@ import static com.example.findy._testutils.ApiDocumentUtils.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 
 @WebMvcTest(AuthController.class)
 class AuthControllerTest extends ControllerTest {
@@ -47,19 +51,59 @@ class AuthControllerTest extends ControllerTest {
                 ));
     }
 
+    @Test
+    void signIn() throws Exception{
+        SignInReq req = AuthFixture.signInReq();
+        SignInRes res = AuthFixture.signInRes();
 
+        when(authService.signIn(any(WebClientResponse.class), eq(req))).thenReturn(res);
 
+        this.mockMvc
+                .perform(post("/sign-in")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().is2xxSuccessful())
+                .andDo(document(
+                        "{method-name}",
+                        requestFields(
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
+                                fieldWithPath("rememberMe").type(JsonFieldType.BOOLEAN).description("자동로그인 여부")
+                        ),
+                        responseFieldsForSingleResult(
+                                fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰")
+                        )
+                ));
+    }
 
+    @Test
+    void signUp() throws Exception{
+        SignUpReq req = AuthFixture.signUpReq();
+
+        this.mockMvc
+                .perform(post("/sign-up")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().is2xxSuccessful())
+                .andDo(document(
+                        "{method-name}",
+                        requestFields(
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("닉네임"),
+                                fieldWithPath("file").type(JsonFieldType.STRING).description("프로필 사진"),
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
+                        ),
+                        responseFieldsForCommonResult()
+                ));
+    }
 
     @Test
     void logout() throws Exception{
         LogoutRes res = AuthFixture.logoutRes();
-
         when(authService.logout(any(WebClientResponse.class))).thenReturn(res);
 
         this.mockMvc
-                .perform(post("/auth/logout")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .perform(post("/auth/logout").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(document(
                         "auth/{method-name}",
@@ -73,7 +117,6 @@ class AuthControllerTest extends ControllerTest {
     void refresh() throws Exception{
         RefreshReq req = AuthFixture.refreshReq();
         RefreshRes res = AuthFixture.refreshRes();
-
         when(authService.refresh(any(WebClientResponse.class), eq(req))).thenReturn(res);
 
         this.mockMvc
@@ -91,18 +134,22 @@ class AuthControllerTest extends ControllerTest {
                         )
                 ));
     }
-    @Test
-    void googleAuth() throws Exception {
-        String code = "sample-google-code";
-        RefreshRes res = AuthFixture.refreshRes();
 
+
+    @Test
+    void googleAuth_success() throws Exception {
+        String code = "sample-auth-code";
+        RefreshRes res = AuthFixture.refreshRes();
         when(authService.googleAuth(any(WebClientResponse.class), eq(code))).thenReturn(res);
 
         this.mockMvc
                 .perform(get("/google/auth").param("code", code))
-                .andExpect(status().isOk())
+                .andExpect(status().is2xxSuccessful())
                 .andDo(document(
-                        "auth/google-auth",
+                        "google/{method-name}",
+                        queryParameters(
+                                parameterWithName("code").description("Google Authorization Code")
+                        ),
                         responseFieldsForSingleResult(
                                 fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰")
                         )
@@ -110,21 +157,13 @@ class AuthControllerTest extends ControllerTest {
     }
 
     @Test
-    void kakaoSignUp() throws Exception {
-        String code = "sample-kakao-code";
-        RefreshRes res = AuthFixture.refreshRes();
-
-        when(authService.kakaoSignUp(any(WebClientResponse.class), any(KakaoCodeReq.class))).thenReturn(res);
-
+    void withdraw_success() throws Exception {
         this.mockMvc
-                .perform(get("/kakao/sign-up")
-                        .param("code", code))
-                .andExpect(status().isOk())
+                .perform(delete("/auth/withdraw"))
+                .andExpect(status().is2xxSuccessful())
                 .andDo(document(
-                        "auth/kakao-sign-up",
-                        responseFieldsForSingleResult(
-                                fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰")
-                        )
+                        "auth/{method-name}",
+                        responseFieldsForCommonResult()
                 ));
     }
 }
