@@ -86,6 +86,8 @@ dependencies {
 	testImplementation("org.testcontainers:jdbc")
 	testImplementation("org.springframework.security:spring-security-test")
 
+	implementation(project(":processor"))
+	annotationProcessor(project(":processor"))
 	testImplementation("org.reflections:reflections:0.10.2")
 
 }
@@ -153,16 +155,5 @@ spotless {
 	isEnforceCheck = false
 	java {
 		eclipse().configFile("${rootDir}/findy-java-formatter-eclipse.xml")
-	}
-}
-
-if (System.getenv("KOYEB_SERVICE_ID") != null || System.getenv("DYNO") != null) {
-	println("Koyeb environment detected — disabling Asciidoctor & Spotless")
-	tasks.matching {
-		it.name.contains("asciidoctor", ignoreCase = true) ||
-				it.name.contains("spotless", ignoreCase = true) ||
-				it.name.contains("postman", ignoreCase = true)
-	}.configureEach {
-		enabled = false
 	}
 }

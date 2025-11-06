@@ -1,8 +1,10 @@
 package com.example.findy._core.exception;
 
+import com.findy.processor.RestDocsIgnore;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@RestDocsIgnore
 @Getter
 public enum ExceptionEnum {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "E1", "잘못된 요청입니다."),
