@@ -49,7 +49,7 @@ dependencies {
 
 	// database
 	implementation ("org.springframework.boot:spring-boot-starter-data-redis")
-	runtimeOnly ("com.mysql:mysql-connector-j")
+	runtimeOnly("org.postgresql:postgresql")
 	implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
 
 	// mail
