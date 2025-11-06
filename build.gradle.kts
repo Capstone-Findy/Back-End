@@ -86,8 +86,6 @@ dependencies {
 	testImplementation("org.testcontainers:jdbc")
 	testImplementation("org.springframework.security:spring-security-test")
 
-	implementation(project(":processor"))
-	annotationProcessor(project(":processor"))
 	testImplementation("org.reflections:reflections:0.10.2")
 
 }
