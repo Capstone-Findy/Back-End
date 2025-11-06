@@ -20,6 +20,7 @@ import com.example.findy.entity.token.KakaoToken;
 import com.example.findy.entity.token.Token;
 import com.example.findy.entity.token.repository.KakaoTokenRepository;
 import com.example.findy.entity.token.repository.TokenRepository;
+import com.example.findy.entity.user.entity.LoginType;
 import com.example.findy.entity.user.entity.User;
 import com.example.findy.entity.user.exception.NotFoundUserException;
 import com.example.findy.entity.user.repository.UserRepository;
@@ -68,7 +69,7 @@ public class AuthService {
     @Transactional
     public void signUp(SignUpReq req) {
         validMailRepository.validCheck(req.email());
-        User user = authMapper.toEntity(req);
+        User user = authMapper.toEntity(req, LoginType.KAKAO);
         userRepository.save(user);
     }
 
@@ -97,7 +98,7 @@ public class AuthService {
     @Transactional
     public SignInRes signIn(WebClientResponse res, SignInReq req) {
         User user = userRepository.getByEmail(req.email());
-        if(!passwordEncoder.matches(req.password(), user.getPassword())){
+        if(!passwordEncoder.matches(req.password(), user.getType().toString())){
             throw new NotFoundUserException();
         }
 
@@ -115,7 +116,7 @@ public class AuthService {
         BlackList blackList = BlackList.of(existToken.getAccessToken());
         blackListRepository.save(blackList);
 
-        if(user.getPassword().equals("kakao")) {
+        if(user.getType().equals(LoginType.KAKAO)) {
             KakaoToken kakaoToken = jwtProvider.issueKakaoTokens(user);
         }
 
@@ -136,7 +137,7 @@ public class AuthService {
         BlackList blackList = BlackList.of(token.getAccessToken());
         blackListRepository.save(blackList);
 
-        if(user.getPassword().equals("kakao")) {
+        if(user.getType().equals(LoginType.KAKAO)) {
             KakaoToken kakaoToken = kakaoTokenRepository.getByUserId(userId);
             kakaoClient.logout(kakaoToken);
             kakaoTokenRepository.delete(kakaoToken);

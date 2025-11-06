@@ -8,7 +8,7 @@ import com.example.findy._core.client.kakao.exception.KakaoClientException;
 import com.example.findy._core.environment.ExternalsProperties;
 import com.example.findy.api.auth.dto.request.KakaoSignUpReq;
 import com.example.findy.entity.token.KakaoToken;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.findy.entity.user.entity.LoginType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -80,7 +80,7 @@ public class KakaoClient {
                     return KakaoSignUpReq.of(kakaoAccountInfoRes.kakao_account().profile().nickname(),
                             kakaoAccountInfoRes.kakao_account().profile().profile_image_url(),
                             kakaoAccountInfoRes.kakao_account().email(),
-                            "kakao",
+                            LoginType.KAKAO,
                             response.refresh_token(),
                             response.access_token());
                 });
