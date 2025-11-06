@@ -155,3 +155,14 @@ spotless {
 		eclipse().configFile("${rootDir}/findy-java-formatter-eclipse.xml")
 	}
 }
+
+if (System.getenv("KOYEB_SERVICE_ID") != null || System.getenv("DYNO") != null) {
+	println("Koyeb environment detected — disabling Asciidoctor & Spotless")
+	tasks.matching {
+		it.name.contains("asciidoctor", ignoreCase = true) ||
+				it.name.contains("spotless", ignoreCase = true) ||
+				it.name.contains("postman", ignoreCase = true)
+	}.configureEach {
+		enabled = false
+	}
+}
