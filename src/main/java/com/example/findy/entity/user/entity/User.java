@@ -59,7 +59,7 @@ public class User extends BaseTimeEntity {
     private int item3;
 
     @JoinColumn(name = "user_id")
-    @ManyToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<User> friends;
 
     private User(String name, String email, LoginType type, File file) {

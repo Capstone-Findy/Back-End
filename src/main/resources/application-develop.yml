@@ -4,13 +4,13 @@ spring:
       on-profile: develop
 
   datasource:
-    url: jdbc:mysql://${DATABASE_HOST:localhost}:${DATABASE_PORT:43306}/${DATABASE_NAME:findy}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://${DATABASE_HOST:dpg-d466enq4d50c73ce46dg-a.oregon-postgres.render.com}:${DATABASE_PORT:5432}/${DATABASE_NAME:findy2025}
+    driver-class-name: org.postgresql.Driver
     username: ${DATABASE_USER:server}
-    password: ${DATABASE_PASSWORD:findy2025}
+    password: ${DATABASE_PASSWORD:NlwuNeLpASJr9cdQn10AmKC7AqLO0moG}
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     defer-datasource-initialization: true
     hibernate:

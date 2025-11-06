@@ -49,7 +49,7 @@ dependencies {
 
 	// database
 	implementation ("org.springframework.boot:spring-boot-starter-data-redis")
-	runtimeOnly ("com.mysql:mysql-connector-j")
+	runtimeOnly("org.postgresql:postgresql")
 	implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
 
 	// mail
@@ -86,8 +86,6 @@ dependencies {
 	testImplementation("org.testcontainers:jdbc")
 	testImplementation("org.springframework.security:spring-security-test")
 
-	implementation(project(":processor"))
-	annotationProcessor(project(":processor"))
 	testImplementation("org.reflections:reflections:0.10.2")
 
 }
