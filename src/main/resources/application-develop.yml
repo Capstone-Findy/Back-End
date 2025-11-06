@@ -56,9 +56,9 @@ security:
 
 externals:
   redis:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
-    password: ${REDIS_PASSWORD:findy2025}
+    host: ${REDIS_HOST:redis-18048.c85.us-east-1-2.ec2.redns.redis-cloud.com}
+    port: ${REDIS_PORT:18048}
+    password: ${REDIS_PASSWORD:A8Ckqy5LqGWw9zkRRDXoY7UsNHWH0TgH}
 
   kakao:
     type: ${GRANT_TYPE:authorization_code}
