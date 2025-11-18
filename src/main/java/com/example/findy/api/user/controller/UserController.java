@@ -18,7 +18,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PatchMapping("/heart")
+    @PatchMapping("/heart/{cnt}")
     public ResponseEntity<CommonResult> updateHeart(
             @PathVariable int cnt
     ) {
