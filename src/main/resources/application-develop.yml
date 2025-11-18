@@ -4,17 +4,17 @@ spring:
       on-profile: develop
 
   datasource:
-    url: jdbc:postgresql://${DATABASE_HOST:dpg-d466enq4d50c73ce46dg-a.oregon-postgres.render.com}:${DATABASE_PORT:5432}/${DATABASE_NAME:findy2025}
-    driver-class-name: org.postgresql.Driver
-    username: ${DATABASE_USER:server}
-    password: ${DATABASE_PASSWORD:NlwuNeLpASJr9cdQn10AmKC7AqLO0moG}
+    url: jdbc:mariadb://database-findy.ctu4kue2073x.ap-northeast-2.rds.amazonaws.com:3306/findy
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DATABASE_USER:root}
+    password: ${DATABASE_PASSWORD:findy2025}
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.MariaDBDialect
     show-sql: true
     defer-datasource-initialization: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -24,7 +24,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USER_NAME:findy.korea@gmail.com}
+    username: ${MAIL_USER_NAME:findy2025@gmail.com}
     password: ${MAIL_PASSWORD:qzflvcxygsynzvfl}
     properties:
       expiration: ${MAIL_EXPIRATION:7200}
@@ -33,8 +33,6 @@ spring:
           auth: true
           starttls:
             enable: true
-
-
 security:
   jwt:
     access:
@@ -56,9 +54,9 @@ security:
 
 externals:
   redis:
-    host: ${REDIS_HOST:redis-18048.c85.us-east-1-2.ec2.redns.redis-cloud.com}
-    port: ${REDIS_PORT:18048}
-    password: ${REDIS_PASSWORD:A8Ckqy5LqGWw9zkRRDXoY7UsNHWH0TgH}
+    host: ${REDIS_HOST:redis-findy-fawuuv.serverless.apn2.cache.amazonaws.com}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:findy2025}
 
   kakao:
     type: ${GRANT_TYPE:authorization_code}
