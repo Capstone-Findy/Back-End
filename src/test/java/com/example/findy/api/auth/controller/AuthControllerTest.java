@@ -146,7 +146,7 @@ class AuthControllerTest extends ControllerTest {
                 .perform(get("/google/auth").param("code", code))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(document(
-                        "google/{method-name}",
+                        "auth/google-auth-success",
                         queryParameters(
                                 parameterWithName("code").description("Google Authorization Code")
                         ),
