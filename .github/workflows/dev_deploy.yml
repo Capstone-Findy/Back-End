@@ -73,7 +73,7 @@ jobs:
             fi
 
             # 기존 프로세스 종료
-            pgrep -f java | xargs -r kill -9
+            pgrep java | xargs -r kill -15
             sleep 5
 
             # JAR 실행
