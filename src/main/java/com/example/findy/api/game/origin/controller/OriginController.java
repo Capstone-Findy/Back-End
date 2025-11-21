@@ -29,7 +29,7 @@ public class OriginController {
     private final OriginService originService;
 
     @PostMapping("/result")
-    public ResponseEntity<CommonResult> updateHeart(
+    public ResponseEntity<CommonResult> updateResult(
             @Valid @RequestBody ResultReq req
             ) {
         originService.updateResult(req);
