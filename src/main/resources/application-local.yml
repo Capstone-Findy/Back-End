@@ -4,17 +4,17 @@ spring:
       on-profile: local
 
   datasource:
-    url: jdbc:mysql://${DATABASE_HOST:localhost}:${DATABASE_PORT:3306}/${DATABASE_NAME:findy}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DATABASE_USER:server}
+    url: jdbc:mariadb://database-findy.ctu4kue2073x.ap-northeast-2.rds.amazonaws.com:3306/findy
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DATABASE_USER:root}
     password: ${DATABASE_PASSWORD:findy2025}
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MariaDBDialect
     show-sql: true
     defer-datasource-initialization: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -54,7 +54,7 @@ security:
 
 externals:
   redis:
-    host: ${REDIS_HOST:localhost}
+    host: ${REDIS_HOST:redis-findy-fawuuv.serverless.apn2.cache.amazonaws.com}
     port: ${REDIS_PORT:6379}
     password: ${REDIS_PASSWORD:findy2025}
 

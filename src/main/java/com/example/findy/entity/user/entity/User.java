@@ -3,6 +3,7 @@ package com.example.findy.entity.user.entity;
 import com.example.findy.api.auth.dto.request.GoogleSignUpReq;
 import com.example.findy.api.auth.dto.request.KakaoSignUpReq;
 import com.example.findy.api.auth.dto.request.SignUpReq;
+import com.example.findy.api.game.origin.dto.request.ResultReq;
 import com.example.findy.api.user.dto.request.UpdateItem;
 import com.example.findy.entity._common.BaseTimeEntity;
 import com.example.findy.entity.file.entity.File;
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,6 +97,12 @@ public class User extends BaseTimeEntity {
     }
 
     public void updateItem(UpdateItem req) {
+        this.item1 += req.item1();
+        this.item2 += req.item2();
+        this.item3 += req.item3();
+    }
+
+    public void updateItem(ResultReq req) {
         this.item1 += req.item1();
         this.item2 += req.item2();
         this.item3 += req.item3();
