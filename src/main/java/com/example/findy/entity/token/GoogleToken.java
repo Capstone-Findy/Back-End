@@ -1,6 +1,7 @@
 package com.example.findy.entity.token;
 
 import com.example.findy.api.auth.dto.request.KakaoSignUpReq;
+import com.example.findy.api.auth.dto.request.GoogleSignUpReq;
 import com.example.findy.entity.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

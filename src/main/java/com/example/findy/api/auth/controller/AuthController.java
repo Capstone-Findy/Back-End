@@ -1,5 +1,4 @@
 package com.example.findy.api.auth.controller;
-
 import com.example.findy._core.client.kakao.dto.request.KakaoCodeReq;
 import com.example.findy._core.dto.ApiResponse;
 import com.example.findy._core.dto.CommonResult;
@@ -18,12 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
+import reactor.core.publisher.Mono;
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-
     @PostMapping("/valid")
     public ResponseEntity<CommonResult> sendValidEmail(
             @RequestBody @Valid ValidMailReq req
@@ -31,7 +29,6 @@ public class AuthController {
         authService.sendValidMail(req);
         return ApiResponse.ok();
     }
-
     @GetMapping("/valid/{email}")
     public ResponseEntity<CommonResult> validEmail(
             @PathVariable String email
@@ -66,6 +63,14 @@ public class AuthController {
         return ApiResponse.ok(response);
     }
 
+    @GetMapping("/google/auth")
+    public ResponseEntity<SingleResult<RefreshRes>> googleAuth(
+            WebClientResponse res,
+            @RequestParam("code") String code
+    ) {
+        RefreshRes response = authService.googleAuth(res, code);
+        return ApiResponse.ok(response);
+    }
     @PostMapping("/auth/refresh")
     public ResponseEntity<SingleResult<RefreshRes>> refresh(
             WebClientResponse res,
@@ -74,7 +79,6 @@ public class AuthController {
         RefreshRes response = authService.refresh(res, req);
         return ApiResponse.ok(response);
     }
-
     @PostMapping("/auth/logout")
     public ResponseEntity<SingleResult<LogoutRes>> logout(
             WebClientResponse res
@@ -82,5 +86,9 @@ public class AuthController {
         LogoutRes response = authService.logout(res);
         return ApiResponse.ok(response);
     }
-
+    @DeleteMapping("/auth/withdraw")
+    public ResponseEntity<CommonResult> withdraw(WebClientResponse res) {
+        authService.withdraw(res);
+        return ApiResponse.ok();
+    }
 }

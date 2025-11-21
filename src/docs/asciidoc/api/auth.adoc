@@ -24,3 +24,12 @@ include::{snippets}/auth/refresh/response-fields-data.adoc[]
 ==== 로그아웃
 include::{snippets}/auth/logout/http-request.adoc[]
 include::{snippets}/auth/logout/response-fields-data.adoc[]
+
+==== 구글 계정 로그인
+include::{snippets}/auth/google-auth-success/http-request.adoc[]
+include::{snippets}/auth/google-auth-success/query-parameters.adoc[]
+include::{snippets}/auth/google-auth-success/response-fields-data.adoc[]
+
+==== 회원 탈퇴
+include::{snippets}/auth/withdraw_success/http-request.adoc[]
+include::{snippets}/auth/withdraw_success/response-fields.adoc[]
