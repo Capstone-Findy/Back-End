@@ -10,3 +10,7 @@
 include::common/common.adoc[]
 
 include::api/auth.adoc[]
+
+include::api/origin.adoc[]
+
+include::api/user.adoc[]
