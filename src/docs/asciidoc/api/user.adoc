@@ -1,0 +1,12 @@
+=== 유저
+
+==== 하트 개수 업데이트
+include::{snippets}/update-heart/http-request.adoc[]
+
+==== 아이템 개수 업데이트
+include::{snippets}/update-item/http-request.adoc[]
+include::{snippets}/update-item/request-fields.adoc[]
+
+=== 유저 정보
+include::{snippets}/get-user/http-request.adoc[]
+include::{snippets}/get-user/response-fields-data.adoc[]

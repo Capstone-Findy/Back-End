@@ -1,0 +1,11 @@
+=== 기본게임
+
+==== 게임 결과 업로드
+include::{snippets}/update-result/http-request.adoc[]
+include::{snippets}/update-result/request-fields.adoc[]
+include::{snippets}/update-result/response-fields.adoc[]
+
+==== 점수 요청
+include::{snippets}/get-score/http-request.adoc[]
+include::{snippets}/get-score/query-parameters.adoc[]
+include::{snippets}/get-score/response-fields-data.adoc[]
