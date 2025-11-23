@@ -1,0 +1,4 @@
+:docinfo: shared-head
+:docinfodir: ../
+
+include::{snippets}/enum/enum-response-fields-LoginType.adoc[]

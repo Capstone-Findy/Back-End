@@ -22,6 +22,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+
 @WebMvcTest(AuthController.class)
 class AuthControllerTest extends ControllerTest {
 
@@ -95,12 +100,10 @@ class AuthControllerTest extends ControllerTest {
     @Test
     void logout() throws Exception{
         LogoutRes res = AuthFixture.logoutRes();
-
         when(authService.logout(any(WebClientResponse.class))).thenReturn(res);
 
         this.mockMvc
-                .perform(post("/auth/logout")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .perform(post("/auth/logout").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(document(
                         "auth/{method-name}",
@@ -114,7 +117,6 @@ class AuthControllerTest extends ControllerTest {
     void refresh() throws Exception{
         RefreshReq req = AuthFixture.refreshReq();
         RefreshRes res = AuthFixture.refreshRes();
-
         when(authService.refresh(any(WebClientResponse.class), eq(req))).thenReturn(res);
 
         this.mockMvc
@@ -133,4 +135,35 @@ class AuthControllerTest extends ControllerTest {
                 ));
     }
 
+
+    @Test
+    void googleAuth_success() throws Exception {
+        String code = "sample-auth-code";
+        RefreshRes res = AuthFixture.refreshRes();
+        when(authService.googleAuth(any(WebClientResponse.class), eq(code))).thenReturn(res);
+
+        this.mockMvc
+                .perform(get("/google/auth").param("code", code))
+                .andExpect(status().is2xxSuccessful())
+                .andDo(document(
+                        "auth/google-auth-success",
+                        queryParameters(
+                                parameterWithName("code").description("Google Authorization Code")
+                        ),
+                        responseFieldsForSingleResult(
+                                fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    void withdraw_success() throws Exception {
+        this.mockMvc
+                .perform(delete("/auth/withdraw"))
+                .andExpect(status().is2xxSuccessful())
+                .andDo(document(
+                        "auth/{method-name}",
+                        responseFieldsForCommonResult()
+                ));
+    }
 }

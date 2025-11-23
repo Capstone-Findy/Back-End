@@ -1,5 +1,6 @@
 package com.example.findy.api.auth.service;
-
+import com.example.findy._core.client.google.GoogleClient;
+import com.example.findy._core.client.google.dto.response.GoogleTokenRes;
 import com.example.findy._core.client.kakao.KakaoClient;
 import com.example.findy._core.client.kakao.dto.request.KakaoCodeReq;
 import com.example.findy._core.environment.SpringProperties;
@@ -16,8 +17,10 @@ import com.example.findy.entity.auth.repository.BlackListRepository;
 import com.example.findy.entity.auth.repository.ValidMailRepository;
 import com.example.findy.entity.file.entity.File;
 import com.example.findy.entity.file.repository.FileRepository;
+import com.example.findy.entity.token.GoogleToken;
 import com.example.findy.entity.token.KakaoToken;
 import com.example.findy.entity.token.Token;
+import com.example.findy.entity.token.repository.GoogleTokenRepository;
 import com.example.findy.entity.token.repository.KakaoTokenRepository;
 import com.example.findy.entity.token.repository.TokenRepository;
 import com.example.findy.entity.user.entity.LoginType;
@@ -41,7 +44,8 @@ public class AuthService {
     private final SpringProperties properties;
     private final MailContentBuilder mailContentBuilder;
     private final KakaoClient kakaoClient;
-
+    private final GoogleClient googleClient;
+    private final GoogleTokenRepository googleTokenRepository;
     private final TokenRepository tokenRepository;
     private final ValidMailRepository validMailRepository;
     private final UserRepository userRepository;
@@ -109,6 +113,33 @@ public class AuthService {
     }
 
     @Transactional
+    public RefreshRes googleAuth(WebClientResponse res, String code) {
+        GoogleSignUpReq googleSignUpReq = googleClient.signUp(code).block();
+        User user;
+        // 회원가입 또는 기존 유저 조회
+        if (!userRepository.existsByEmail(googleSignUpReq.email())) {
+            File file = File.of(googleSignUpReq.picture());
+            fileRepository.save(file);
+            user = User.of(googleSignUpReq, file);
+            userRepository.save(user);
+        } else {
+            user = userRepository.getByEmail(googleSignUpReq.email());
+        }
+        // refresh_token 처리
+        String refreshToken = googleSignUpReq.refreshToken();
+        GoogleToken existingToken = googleTokenRepository.findByUserId(user.getId()).orElse(null);
+        String finalRefresh = (refreshToken != null) ? refreshToken : (existingToken != null ? existingToken.getRefreshToken() : null);
+
+// 저장(리프레시 토큰 null 허용)
+        GoogleToken googleToken = GoogleToken.of(user, googleSignUpReq.accessToken(), finalRefresh);
+        googleTokenRepository.save(googleToken);
+        // JWT 발급 및 응답
+        Token token = jwtProvider.issueTokens(user, true);
+        res.addTokenCookies(res, token);
+        return new RefreshRes(token.getRefreshToken());
+    }
+
+    @Transactional
     public RefreshRes refresh(WebClientResponse res, RefreshReq req) {
         Token existToken = tokenRepository.getByRefreshToken(req.refreshToken());
         User user = userRepository.getById(existToken.getUserId());
@@ -120,6 +151,18 @@ public class AuthService {
             KakaoToken kakaoToken = jwtProvider.issueKakaoTokens(user);
         }
 
+        if (user.getType().equals(LoginType.GOOGLE)) {
+            GoogleToken gt = googleTokenRepository.getByUserId(user.getId());
+            if (gt.getRefreshToken() != null && !gt.getRefreshToken().isBlank()) {
+                GoogleTokenRes gtr = googleClient.refreshToken(gt.getRefreshToken()).block();
+                String newAccess = gtr.access_token();
+                String newRefresh = (gtr.refresh_token() != null && !gtr.refresh_token().isBlank())
+                        ? gtr.refresh_token()
+                        : gt.getRefreshToken();
+                googleTokenRepository.delete(gt);
+                googleTokenRepository.save(GoogleToken.of(user, newAccess, newRefresh));
+            }
+        }
         Token token = jwtProvider.issueTokens(user, existToken.isRememberMe());
         res.addTokenCookies(res, token);
 
@@ -142,12 +185,17 @@ public class AuthService {
             kakaoClient.logout(kakaoToken);
             kakaoTokenRepository.delete(kakaoToken);
         }
-
+        if (user.getType().equals(LoginType.GOOGLE)) {
+            GoogleToken googleToken = googleTokenRepository.getByUserId(userId);
+            String tokenToRevoke = (googleToken.getRefreshToken() != null && !googleToken.getRefreshToken().isBlank())
+                    ? googleToken.getRefreshToken()
+                    : googleToken.getAccessToken();
+            googleClient.logout(tokenToRevoke);
+            googleTokenRepository.delete(googleToken);
+        }
         tokenRepository.delete(token);
-
         return new LogoutRes(userId);
     }
-
     private void sendMail(ValidMailReq req, String message) {
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -156,7 +204,29 @@ public class AuthService {
             messageHelper.setSubject("findy 인증 메일");
             messageHelper.setText(message, true);
         };
-
         mailSender.send(messagePreparator);
+    }
+
+    @Transactional
+    public void withdraw(WebClientResponse res) {
+        res.removeAllCustomCookies();
+        Long userId = JwtAuthentication.getUserId();
+        User user = userRepository.getById(userId);
+        Token token = tokenRepository.getByUserId(userId);
+        blackListRepository.save(BlackList.of(token.getAccessToken()));
+        if (user.getType().equals(LoginType.KAKAO)) {
+            KakaoToken kt = kakaoTokenRepository.getByUserId(userId);
+            kakaoClient.logout(kt);
+            kakaoTokenRepository.delete(kt);
+        } else if (user.getType().equals(LoginType.GOOGLE)) {
+            GoogleToken gt = googleTokenRepository.getByUserId(userId);
+            String tokenToRevoke = (gt.getRefreshToken() != null && !gt.getRefreshToken().isBlank())
+                    ? gt.getRefreshToken()
+                    : gt.getAccessToken();
+            googleClient.logout(tokenToRevoke);
+            googleTokenRepository.delete(gt);
+        }
+        tokenRepository.delete(token);
+        userRepository.delete(user);
     }
 }

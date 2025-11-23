@@ -1,7 +1,5 @@
 package com.example.findy._core.config;
-
 import java.util.List;
-
 import com.example.findy._core.environment.SecurityProperties;
 import com.example.findy._core.infrastructure.filter.HttpServletWrapperFilter;
 import com.example.findy._core.infrastructure.filter.JwtAuthenticationFilter;
@@ -22,8 +20,6 @@ import org.springframework.security.web.header.writers.XXssProtectionHeaderWrite
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties(SecurityProperties.class)
@@ -37,6 +33,7 @@ public class SecurityConfig {
             "/auth/refresh",
             "/auth/valid/**",
             "/auth/kakao/sign-up",
+            "/auth/google/auth",
             "/api",
             "/error/**",
             "/courses/**",
@@ -49,7 +46,6 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final SecurityProperties.CorsProperties corsProperties;
     private final SecurityProperties.CookieProperties cookieProperties;
-
     public SecurityConfig(
             JwtProvider jwtProvider,
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
@@ -62,8 +58,6 @@ public class SecurityConfig {
         this.corsProperties = securityProperties.cors();
         this.cookieProperties = securityProperties.cookie();
     }
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -95,16 +89,13 @@ public class SecurityConfig {
                 .addFilterBefore(new HttpServletWrapperFilter(cookieProperties), ExceptionTranslationFilter.class)
                 .build();
     }
-
     private CorsConfigurationSource corsConfigurationSource() {
         final String[] allowedMethod = {"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"};
-
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(List.of(corsProperties.origins()));
         corsConfiguration.setAllowedMethods(List.of(allowedMethod));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
