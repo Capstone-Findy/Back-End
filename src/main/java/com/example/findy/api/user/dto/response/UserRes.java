@@ -8,7 +8,8 @@ public record UserRes(
         int heart,
         int item1,
         int item2,
-        int item3
+        int item3,
+        int item4
 ) {
     @QueryProjection
     public UserRes{}

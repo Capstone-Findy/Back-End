@@ -22,7 +22,8 @@ public class UserQueryRepository {
                         qUser.heart,
                         qUser.item1,
                         qUser.item2,
-                        qUser.item3
+                        qUser.item3,
+                        qUser.item4
                 ))
                 .from(qUser)
                 .where(qUser.eq(user))
