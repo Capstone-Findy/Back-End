@@ -6,6 +6,7 @@ public record ResultReq(
         int correct,
         int item1,
         int item2,
-        int item3
+        int item3,
+        int item4
 ) {
 }

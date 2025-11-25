@@ -50,7 +50,8 @@ class UserControllerTest extends ControllerTest {
                         requestFields(
                                 fieldWithPath("item1").type(JsonFieldType.NUMBER).description("아이템1 증가 / 감소 개수"),
                                 fieldWithPath("item2").type(JsonFieldType.NUMBER).description("아이템2 증가 / 감소 개수"),
-                                fieldWithPath("item3").type(JsonFieldType.NUMBER).description("아이템3 증가 / 감소 개수")
+                                fieldWithPath("item3").type(JsonFieldType.NUMBER).description("아이템3 증가 / 감소 개수"),
+                                fieldWithPath("item4").type(JsonFieldType.NUMBER).description("아이템4 증가 / 감소 개수")
                         ),
                         responseFieldsForCommonResult()
                 ));
@@ -72,7 +73,8 @@ class UserControllerTest extends ControllerTest {
                                 fieldWithPath("heart").type(JsonFieldType.NUMBER).description("사용자 하트 수"),
                                 fieldWithPath("item1").type(JsonFieldType.NUMBER).description("아이템1 증가 / 감소 개수"),
                                 fieldWithPath("item2").type(JsonFieldType.NUMBER).description("아이템2 증가 / 감소 개수"),
-                                fieldWithPath("item3").type(JsonFieldType.NUMBER).description("아이템3 증가 / 감소 개수")
+                                fieldWithPath("item3").type(JsonFieldType.NUMBER).description("아이템3 증가 / 감소 개수"),
+                                fieldWithPath("item4").type(JsonFieldType.NUMBER).description("아이템4 증가 / 감소 개수")
                         )
                 ));
     }

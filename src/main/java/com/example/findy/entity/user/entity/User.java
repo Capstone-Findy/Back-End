@@ -61,6 +61,10 @@ public class User extends BaseTimeEntity {
     @Comment("아이템 3")
     private int item3;
 
+    @Column(nullable = false)
+    @Comment("아이템 4")
+    private int item4;
+
     @JoinColumn(name = "user_id")
     @OneToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<User> friends;
@@ -75,6 +79,7 @@ public class User extends BaseTimeEntity {
         this.item1 = 0;
         this.item2 = 0;
         this.item3 = 0;
+        this.item4 = 0;
         this.friends = new ArrayList<>();
     }
 
@@ -106,5 +111,6 @@ public class User extends BaseTimeEntity {
         this.item1 += req.item1();
         this.item2 += req.item2();
         this.item3 += req.item3();
+        this.item4 += req.item4();
     }
 }

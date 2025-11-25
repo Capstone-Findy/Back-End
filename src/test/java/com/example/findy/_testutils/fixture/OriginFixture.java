@@ -8,7 +8,7 @@ import java.util.List;
 
 public class OriginFixture {
     public static ResultReq resultReq() {
-        return new ResultReq(1, 1, 1, 1, 1, 1);
+        return new ResultReq(1, 1, 1, 1, 1, 1, 1);
     }
 
     public static List<ResultRes> resultResList() {
