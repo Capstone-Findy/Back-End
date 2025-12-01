@@ -58,7 +58,7 @@ public class AuthService {
     public void sendValidMail(ValidMailReq req) {
         userRepository.duplicatedByEmail(req.email());
 
-        String link = "http://localhost:8080/valid/" + req.email();
+        String link = "http://54.116.10.1:8080/valid/" + req.email();
         String message = mailContentBuilder.build(link);
 
         sendMail(req, message);
