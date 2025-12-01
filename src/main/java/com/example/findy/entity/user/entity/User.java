@@ -41,6 +41,9 @@ public class User extends BaseTimeEntity {
     @Comment("로그인 방식")
     private LoginType type;
 
+    @Column
+    private String password;
+
     @Column(nullable = false)
     @Comment("라이프")
     private int heart;
@@ -69,8 +72,9 @@ public class User extends BaseTimeEntity {
     @OneToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<User> friends;
 
-    private User(String name, String email, LoginType type, File file) {
+    private User(String name, String password, String email, LoginType type, File file) {
         this.file = file;
+        this.password = password;
         this.name = name;
         this.email = email;
         this.type = type;
@@ -87,12 +91,12 @@ public class User extends BaseTimeEntity {
         return new User(req.name(), req.email(), req.type(), file);
     }
 
-    public static User of(SignUpReq req, LoginType type, File file){
-        return new User(req.name(), req.email(), type, file);
+    public static User of(SignUpReq req, String password, LoginType type, File file){
+        return new User(req.name(), password, req.email(), type, file);
     }
 
     public static User of(GoogleSignUpReq req, File file){
-        return new User(req.name(), req.email(), req.type(), file);
+        return new User(req.name(), null, req.email(), req.type(), file);
     }
 
     public void updateHeart(int heart) {
