@@ -7,5 +7,7 @@ public enum LoginType {
     @RestDocs("구글")
     GOOGLE,
     @RestDocs("카카오")
-    KAKAO
+    KAKAO,
+    @RestDocs("일반")
+    ORIGIN
 }

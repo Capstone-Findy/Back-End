@@ -73,7 +73,7 @@ public class AuthService {
     @Transactional
     public void signUp(SignUpReq req) {
         validMailRepository.validCheck(req.email());
-        User user = authMapper.toEntity(req, LoginType.KAKAO);
+        User user = authMapper.toEntity(req, LoginType.ORIGIN);
         userRepository.save(user);
     }
 
