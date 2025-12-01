@@ -31,7 +31,7 @@ public class SecurityConfig {
             "/auth/find/**",
             "/auth/password",
             "/auth/refresh",
-            "/auth/valid/**",
+            "/valid/**",
             "/auth/kakao/sign-up",
             "/auth/google/auth",
             "/api",
