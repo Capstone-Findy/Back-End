@@ -102,7 +102,7 @@ public class AuthService {
     @Transactional
     public SignInRes signIn(WebClientResponse res, SignInReq req) {
         User user = userRepository.getByEmail(req.email());
-        if(!passwordEncoder.matches(req.password(), user.getType().toString())){
+        if(!passwordEncoder.matches(req.password(), user.getPassword())){
             throw new NotFoundUserException();
         }
 
