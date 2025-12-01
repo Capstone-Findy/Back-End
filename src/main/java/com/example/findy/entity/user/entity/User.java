@@ -88,7 +88,7 @@ public class User extends BaseTimeEntity {
     }
 
     public static User of(KakaoSignUpReq req,  File file){
-        return new User(req.name(), req.email(), req.type(), file);
+        return new User(req.name(), null,  req.email(), req.type(), file);
     }
 
     public static User of(SignUpReq req, String password, LoginType type, File file){
