@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
-import static java.lang.Math.max;
+import java.io.Serializable;
 
 @Entity
 @Getter
@@ -14,6 +14,16 @@ import static java.lang.Math.max;
 public class OriginUser {
     @EmbeddedId
     private OriginUserId id;
+
+    @MapsId("originId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "origin_id", insertable = false, updatable = false)
+    private Origin origin;
+
+    @MapsId("userId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
 
     @Column(nullable = false)
     @Comment("점수")
@@ -25,6 +35,8 @@ public class OriginUser {
 
     private OriginUser(User user, Origin origin, int score, int time) {
         this.id = new OriginUserId(origin, user);
+        this.origin = origin;
+        this.user = user;
         this.score = score;
         this.time = time;
     }
@@ -39,18 +51,20 @@ public class OriginUser {
             this.time = req.remainTime();
         }
     }
-    @Getter
+
     @Embeddable
+    @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
     @EqualsAndHashCode
-    public class OriginUserId {
+    public static class OriginUserId implements Serializable {
+
+        @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "origin_id", nullable = false)
-        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
         private Origin originId;
 
+        @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "user_id", nullable = false)
-        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
         private User userId;
     }
 }
